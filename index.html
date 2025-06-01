@@ -297,6 +297,11 @@
         .button-danger i {
             margin-right: 6px;
         }
+        .button-danger:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+        }
+
 
         .message {
             padding: 15px; border-radius: var(--border-radius-sm); margin-bottom: 20px;
@@ -371,7 +376,6 @@
         }
         .lead-item .delete-button:hover { opacity: 1; color: var(--danger-color); background-color: rgba(220, 53, 69, 0.1); }
         
-        /* Estilos para o novo botão WhatsApp */
         .lead-actions {
             margin-top: 15px;
             padding-top: 15px;
@@ -381,7 +385,7 @@
         }
         .button-whatsapp { 
             background-color: var(--whatsapp-color);
-            color: white !important; /* Sobrescrever cor de texto de links */
+            color: white !important; 
             padding: 8px 15px;
             border: none;
             border-radius: var(--border-radius-sm);
@@ -391,7 +395,7 @@
             transition: var(--transition-base);
             display: inline-flex; 
             align-items: center;
-            text-decoration: none; /* Remover sublinhado de link se for tag <a> */
+            text-decoration: none; 
             width: auto; 
             margin-top: 0; 
         }
@@ -405,7 +409,6 @@
             font-size: 1.1em; 
         }
 
-
         #leadsContainer > p { 
             padding: 40px 20px; text-align: center; color: var(--medium-text);
             font-size: var(--font-size-base); border: 2px dashed var(--border-color);
@@ -415,7 +418,7 @@
         @media (max-width: 768px) { 
             .lead-list-controls { flex-direction: column; align-items: stretch; }
             .filters-container { width: 100%; justify-content: space-between; }
-            .filters-container div { flex-grow: 1; display: flex; flex-direction: column; } /* Label em cima do select */
+            .filters-container div { flex-grow: 1; display: flex; flex-direction: column; } 
             .filters-container label { margin-bottom: 4px; }
             .filters-container select { flex-grow: 1; min-width: 150px; width: 100%;}
             #deleteAllSyncedButton { width: 100%; margin-top: 10px; }
@@ -508,13 +511,13 @@
                     <label for="filterStatus">Status:</label>
                     <select id="filterStatus">
                         <option value="all">Todos</option>
-                        </select>
+                    </select>
                 </div>
                 <div>
                     <label for="filterCampaign">Campanha:</label>
                     <select id="filterCampaign">
                         <option value="all">Todas</option>
-                        </select>
+                    </select>
                 </div>
             </div>
             <button id="deleteAllSyncedButton" class="button-danger">
@@ -922,27 +925,23 @@
                 }
                 leadItem.innerHTML = leadItemHTML;
 
-
                 leadItem.querySelector('.delete-button').addEventListener('click', (e) => {
                     e.stopPropagation();
                     handleDeleteLead(lead.localId);
                 });
                 leadItem.addEventListener('click', (e) => {
-                     // Não abrir para edição se clicou no botão do WhatsApp
-                    if (e.target.closest('.button-whatsapp')) {
-                        return;
-                    }
+                    if (e.target.closest('.button-whatsapp')) { return; }
                     handleEditLead(lead.localId);
                 });
                 leadsContainer.appendChild(leadItem);
             });
         }
 
-        leadsContainer.addEventListener('click', function(event) { // Event listener para botão WhatsApp
+        leadsContainer.addEventListener('click', function(event) { 
             const whatsappButton = event.target.closest('.button-whatsapp');
             if (whatsappButton) {
                 event.preventDefault(); 
-                event.stopPropagation(); // Impede que o clique no botão também abra a edição do lead
+                event.stopPropagation(); 
 
                 const nome = whatsappButton.dataset.nome;
                 const endereco = whatsappButton.dataset.endereco;
@@ -1051,9 +1050,14 @@
                 }
                 if (localDeletesCount > 0) {
                     showMessage(`${localDeletesCount} lead(s) marcado(s) para exclusão. Sincronizando...`, 'info');
-                    if (navigator.onLine) await syncOfflineDeletions(); // Isso vai tentar deletar do Firebase e depois do Dexie
+                    if (navigator.onLine) await syncOfflineDeletions(); 
+                } else { // Caso não haja nenhum com firebaseId (improvável para sincronizado:1, mas seguro)
+                    await loadLeadsFromCacheAndApplyFilters(); // Apenas recarrega
                 }
-                await loadLeadsFromCacheAndApplyFilters();
+                // O recarregamento final dos leads e reabilitação do botão ocorrerá após syncOfflineDeletions terminar ou aqui se não houver sync.
+                // Para garantir que o botão seja reabilitado, pode ser melhor colocar dentro do fluxo de syncOfflineDeletions ou após um timeout.
+                // Por simplicidade aqui, assumimos que loadLeadsFromCacheAndApplyFilters após syncOfflineDeletions irá acontecer.
+                 // A função syncOfflineDeletions já chama loadLeadsFromCacheAndApplyFilters()
                 deleteAllSyncedButton.disabled = false;
                 deleteAllSyncedButton.innerHTML = '<i class="fas fa-eraser"></i> Apagar Sincronizados';
             }
@@ -1069,6 +1073,10 @@
         }
 
         getLocationButton.addEventListener('click', async () => {
+            if (!navigator.onLine) {
+                showMessage('Funcionalidade de geolocalização requer conexão com a internet.', 'warning');
+                return;
+            }
             if (!navigator.geolocation) { showMessage('Seu navegador não suporta Geolocalização.', 'error'); return; }
             
             getLocationButton.disabled = true; 
@@ -1125,6 +1133,19 @@
             if (currentUserId) await loadLeadsInitial();
         });
         window.addEventListener('offline', () => showMessage('Você está offline. Alterações serão salvas localmente.', 'warning'));
+
+        // --- Service Worker (Para PWA e offline-first) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js') 
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Falha ao registrar Service Worker:', error);
+                    });
+            });
+        }
 
         console.log("App Leads inicializado. Aguardando autenticação...");
 
