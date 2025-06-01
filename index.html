@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEADS - Gestor de Obras</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #0056b3; 
+            --primary-color-light: #E6F0FF; 
+            --secondary-color: #218838; 
+            --danger-color: #c82333; 
+            --danger-color-hover: #a81e2b;
+            --info-color: #138496; 
+            --warning-color: #ffb300; 
+            --whatsapp-color: #25D366;
+            --whatsapp-color-hover: #1EBE57;
+            
+            --light-bg: #f4f7f6; 
+            --card-bg: #ffffff;
+            --border-color: #dee2e6; 
+            --input-border-color: #ced4da;
+            --input-focus-border-color: var(--primary-color);
+            --input-focus-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25);
+
+            --dark-text: #212529; 
+            --medium-text: #495057; 
+            --light-text-on-dark: #ffffff;
+            
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 5px 15px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+
+            --font-family-sans-serif: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-size-base: 1rem; 
+            --font-size-sm: 0.875rem; 
+            --font-size-lg: 1.125rem; 
+
+            --border-radius-base: 8px;
+            --border-radius-sm: 6px;
+            --transition-base: all 0.2s ease-in-out;
+        }
+
+        body {
+            font-family: var(--font-family-sans-serif);
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            max-width: 760px; 
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        header {
+            background: var(--primary-color);
+            color: var(--light-text-on-dark);
+            padding: 20px 25px; 
+            text-align: left; 
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 950; 
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.75rem; 
+            font-weight: 800; 
+            margin: 0; 
+            display: flex;
+            align-items: center;
+            letter-spacing: -0.5px;
+        }
+        header h1 i.fa-map-marker-alt {
+            margin-right: 12px;
+            font-size: 1.5rem; 
+            opacity: 0.9;
+        }
+
+        .lead-list-container h2, #leadFormContainer h2 {
+            color: var(--dark-text);
+            font-size: 1.5rem;
+            font-weight: 700; 
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color-light);
+            padding-bottom: 10px;
+        }
+
+        .add-button {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: var(--secondary-color); 
+            color: var(--light-text-on-dark);
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transition: var(--transition-base), transform 0.15s ease-out;
+        }
+        .add-button:hover {
+            background-color: #1c7430; 
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        }
+        .add-button:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        .add-button.form-active {
+            background-color: var(--danger-color);
+        }
+        .add-button.form-active:hover {
+            background-color: var(--danger-color-hover);
+        }
+
+
+        #leadFormContainer {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius-base);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+            display: none;
+            transition: var(--transition-base);
+            position: relative;
+            z-index: 800;
+        }
+        #leadFormContainer.active {
+            display: block;
+        }
+
+        #leadForm label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--dark-text);
+        }
+
+        #leadForm input[type="text"],
+        #leadForm input[type="tel"],
+        #leadForm textarea,
+        #leadForm select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--input-border-color);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-base);
+            box-sizing: border-box;
+            background-color: #fff;
+            color: var(--dark-text);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        #leadForm input[type="text"]:focus,
+        #leadForm input[type="tel"]:focus,
+        #leadForm textarea:focus,
+        #leadForm select:focus {
+            border-color: var(--input-focus-border-color);
+            outline: 0;
+            box-shadow: var(--input-focus-shadow);
+        }
+        #leadForm textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        #leadForm ::placeholder {
+          color: #a0aec0;
+          opacity: 1;
+        }
+
+        #leadForm input[type="submit"],
+        #leadForm button {
+            color: var(--light-text-on-dark);
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            transition: var(--transition-base);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #leadForm input[type="submit"] {
+            background-color: var(--secondary-color);
+        }
+        #leadForm input[type="submit"]:hover {
+            background-color: #1c7430;
+            box-shadow: var(--shadow-sm);
+        }
+
+        #leadForm button#getLocationButton {
+            background-color: var(--info-color);
+            margin-bottom: 15px;
+            margin-top: -5px;
+        }
+        #leadForm button#getLocationButton:hover {
+            background-color: #106c7a;
+            box-shadow: var(--shadow-sm);
+        }
+        #leadForm button#getLocationButton i {
+            margin-right: 8px;
+        }
+
+        #leadForm button#cancelFormButton {
+            background-color: #6c757d;
+            margin-top: 10px;
+        }
+        #leadForm button#cancelFormButton:hover {
+            background-color: #5a6268;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .lead-list-controls {
+            background-color: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: var(--border-radius-base);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap; 
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px; 
+        }
+
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 20px; 
+        }
+
+        .filters-container label {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            color: var(--medium-text);
+            margin-right: 5px;
+        }
+
+        .filters-container select {
+            padding: 8px 12px;
+            border: 1px solid var(--input-border-color);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-sm);
+            background-color: #fff;
+            min-width: 180px; 
+        }
+        .filters-container select:focus {
+            border-color: var(--input-focus-border-color);
+            outline: 0;
+            box-shadow: var(--input-focus-shadow);
+        }
+
+        .button-danger { 
+            background-color: var(--danger-color);
+            color: var(--light-text-on-dark);
+            padding: 8px 15px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            transition: var(--transition-base);
+        }
+        .button-danger:hover {
+            background-color: var(--danger-color-hover);
+            box-shadow: var(--shadow-sm);
+        }
+        .button-danger i {
+            margin-right: 6px;
+        }
+
+        .message {
+            padding: 15px; border-radius: var(--border-radius-sm); margin-bottom: 20px;
+            font-weight: 500; text-align: left; border-width: 1px; border-style: solid;
+            display: none; align-items: center;
+        }
+        .message i { margin-right: 10px; font-size: 1.2em; }
+        .message.success { background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; }
+        .message.error { background-color: #f8d7da; color: #842029; border-color: #f5c2c7; }
+        .message.info { background-color: #cff4fc; color: #055160; border-color: #b6effb; }
+        .message.warning { background-color: #fff3cd; color: #664d03; border-color: #ffecb5; }
+
+        .lead-list-container { margin-top: 0; }
+        .lead-item {
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            padding: 20px; margin-bottom: 20px; border-radius: var(--border-radius-base);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-base), box-shadow 0.2s ease, border-left-color 0.3s ease;
+            position: relative; cursor: pointer; border-left: 5px solid transparent;
+        }
+        .lead-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-left-color: var(--primary-color); }
+
+        .lead-item.status-border-Nova { border-left-color: var(--primary-color) !important; }
+        .lead-item.status-border-ContatoFeito { border-left-color: var(--info-color) !important; }
+        .lead-item.status-border-IdentificacaodeInteresse { border-left-color: var(--warning-color) !important; }
+        .lead-item.status-border-Trabalhando { border-left-color: #6f42c1 !important; }
+        .lead-item.status-border-Convertida { border-left-color: var(--secondary-color) !important; }
+        .lead-item.status-border-SemContato { border-left-color: var(--danger-color) !important; }
+        .lead-item.status-border-Retomada { border-left-color: #6c757d !important; }
+        .lead-item.status-border-Vencida { border-left-color: #fd7e14 !important; }
+
+        .lead-item h3 {
+            font-size: var(--font-size-lg); font-weight: 600; margin-top: 0; margin-bottom: 10px;
+            color: var(--dark-text); display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap; padding-right: 55px; 
+        }
+        .lead-item h3 > span:first-child { margin-right: 10px; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .lead-item .status-badges { display: flex; align-items: center; flex-shrink: 0; }
+
+        .lead-item p { margin: 8px 0; font-size: var(--font-size-sm); color: var(--medium-text); line-height: 1.5; }
+        .lead-item p strong { color: var(--dark-text); font-weight: 600; }
+        .lead-item a { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+        .lead-item a:hover { text-decoration: underline; }
+
+        .lead-item .status {
+            display: inline-block; padding: 5px 10px; border-radius: var(--border-radius-sm);
+            font-size: 0.75rem; font-weight: 600; color: var(--light-text-on-dark);
+            vertical-align: middle; text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .status-ContatoFeito { background-color: var(--info-color); }
+        .status-Convertida { background-color: var(--secondary-color); }
+        .status-IdentificacaodeInteresse { background-color: var(--warning-color); color: var(--dark-text); }
+        .status-Nova { background-color: var(--primary-color); }
+        .status-Retomada { background-color: #5a6268; }
+        .status-SemContato { background-color: var(--danger-color); }
+        .status-Trabalhando { background-color: #583f99; }
+        .status-Vencida { background-color: #e66f00; }
+
+        .sync-status {
+            display: inline-block; padding: 3px 8px; border-radius: var(--border-radius-sm);
+            font-size: 0.7rem; font-weight: 600; margin-left: 10px;
+            vertical-align: middle; border: 1px solid transparent;
+        }
+        .sync-status.sincronizado { background-color: #e6f9ee; color: #1e7e40; border-color: #bcf0d2; }
+        .sync-status.pendente { background-color: #fff8e1; color: #8c6d0e; border-color: #ffefb3; }
+
+        .lead-item .delete-button {
+            position: absolute; top: 15px; right: 15px; background: transparent;
+            border: none; color: var(--medium-text); font-size: 1.1rem;
+            cursor: pointer; opacity: 0.6; transition: var(--transition-base);
+            padding: 8px; border-radius: 50%; line-height: 1; z-index: 5;
+        }
+        .lead-item .delete-button:hover { opacity: 1; color: var(--danger-color); background-color: rgba(220, 53, 69, 0.1); }
+        
+        /* Estilos para o novo botão WhatsApp */
+        .lead-actions {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px; 
+        }
+        .button-whatsapp { 
+            background-color: var(--whatsapp-color);
+            color: white !important; /* Sobrescrever cor de texto de links */
+            padding: 8px 15px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            transition: var(--transition-base);
+            display: inline-flex; 
+            align-items: center;
+            text-decoration: none; /* Remover sublinhado de link se for tag <a> */
+            width: auto; 
+            margin-top: 0; 
+        }
+        .button-whatsapp:hover {
+            background-color: var(--whatsapp-color-hover);
+            box-shadow: var(--shadow-sm);
+            color: white !important;
+        }
+        .button-whatsapp i.fa-whatsapp {
+            margin-right: 8px;
+            font-size: 1.1em; 
+        }
+
+
+        #leadsContainer > p { 
+            padding: 40px 20px; text-align: center; color: var(--medium-text);
+            font-size: var(--font-size-base); border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius-base); background-color: var(--card-bg);
+        }
+
+        @media (max-width: 768px) { 
+            .lead-list-controls { flex-direction: column; align-items: stretch; }
+            .filters-container { width: 100%; justify-content: space-between; }
+            .filters-container div { flex-grow: 1; display: flex; flex-direction: column; } /* Label em cima do select */
+            .filters-container label { margin-bottom: 4px; }
+            .filters-container select { flex-grow: 1; min-width: 150px; width: 100%;}
+            #deleteAllSyncedButton { width: 100%; margin-top: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 15px 10px; }
+            header { padding: 15px 15px; } 
+            header h1 { font-size: 1.5rem; }
+            header h1 i.fa-map-marker-alt { font-size: 1.3rem; margin-right: 8px;}
+
+            .lead-list-container h2, #leadFormContainer h2 { font-size: 1.3rem; }
+            .add-button { width: 50px; height: 50px; font-size: 22px; bottom: 15px; right: 15px; }
+            
+            #leadForm input[type="text"], #leadForm input[type="tel"],
+            #leadForm textarea, #leadForm select { padding: 10px 12px; font-size: 0.95rem; }
+            #leadForm input[type="submit"], #leadForm button { padding: 12px 15px; font-size: 0.95rem; }
+            
+            .lead-item { padding: 15px; }
+            .lead-item h3 {
+                font-size: var(--font-size-base);
+                flex-direction: column;
+                align-items: flex-start;
+                padding-right: 45px; 
+            }
+            .lead-item .status-badges { margin-top: 8px; margin-left: 0; width: 100%; justify-content: flex-start; box-sizing: border-box; }
+            .sync-status { margin-left: 0; margin-right: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-map-marker-alt"></i>LEADS</h1>
+    </header>
+
+    <div class="container">
+        <div id="leadFormContainer">
+            <h2 id="formTitle">Cadastrar Novo Lead</h2>
+            <div id="message" class="message"></div>
+            <form id="leadForm">
+                <input type="hidden" id="leadId">
+                <label for="nome">Nome do Contato:</label>
+                <input type="text" id="nome" required>
+
+                <label for="telefone">Telefone:</label>
+                <input type="tel" id="telefone" placeholder="(XX) XXXXX-XXXX" required>
+
+                <label for="endereco">Endereço Completo (em MAIÚSCULAS):</label>
+                <input type="text" id="endereco" required oninput="this.value = this.value.toUpperCase()">
+                <button type="button" id="getLocationButton"><i class="fas fa-map-marker-alt"></i> Preencher Endereço</button>
+                <div id="locationInfo" style="font-size: 0.8em; color: #666; margin-top: -10px; margin-bottom: 10px;"></div>
+
+                <label for="campanha">Campanha:</label>
+                <select id="campanha" required>
+                    <option value="">Selecione uma campanha</option>
+                    <option value="Indicação">Indicação</option>
+                    <option value="Mídia Digital">Mídia Digital</option>
+                    <option value="Mídia Impressa">Mídia Impressa</option>
+                    <option value="Parceiros">Parceiros</option>
+                    <option value="Plataformas">Plataformas</option>
+                    <option value="Prospecção Externa">Prospecção Externa</option>
+                    <option value="Prospecção Interna">Prospecção Interna</option>
+                    <option value="Telefone">Telefone</option>
+                </select>
+
+                <label for="comentarios">Comentários (Opcional):</label>
+                <textarea id="comentarios" rows="3"></textarea>
+
+                <label for="statusLead">Status do Lead:</label>
+                <select id="statusLead" required>
+                    <option value="">Selecione um status</option>
+                    <option value="Nova">Nova</option>
+                    <option value="Contato Feito">Contato Feito</option>
+                    <option value="Identificação de Interesse">Identificação de Interesse</option>
+                    <option value="Trabalhando">Trabalhando</option>
+                    <option value="Convertida">Convertida</option>
+                    <option value="Sem Contato">Sem Contato</option>
+                    <option value="Retomada">Retomada</option>
+                    <option value="Vencida">Vencida</option>
+                </select>
+
+                <input type="submit" id="submitButton" value="Salvar Lead">
+                <button type="button" id="cancelFormButton" style="background-color: #6c757d; margin-top: 10px;">Cancelar</button>
+            </form>
+        </div>
+
+        <div class="lead-list-controls">
+            <div class="filters-container">
+                <div>
+                    <label for="filterStatus">Status:</label>
+                    <select id="filterStatus">
+                        <option value="all">Todos</option>
+                        </select>
+                </div>
+                <div>
+                    <label for="filterCampaign">Campanha:</label>
+                    <select id="filterCampaign">
+                        <option value="all">Todas</option>
+                        </select>
+                </div>
+            </div>
+            <button id="deleteAllSyncedButton" class="button-danger">
+                <i class="fas fa-eraser"></i> Apagar Sincronizados
+            </button>
+        </div>
+
+        <div class="lead-list-container">
+            <h2>Meus Leads</h2>
+            <div id="leadsContainer">
+                </div>
+        </div>
+    </div>
+
+    <button class="add-button" id="toggleFormButton"><i class="fas fa-plus"></i></button>
+
+    <script src="https://unpkg.com/dexie@latest/dist/dexie.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, where, Timestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUw5BnFR40m_AP-Qdn8UevZGkvVS32gNM", 
+            authDomain: "lead-49f3e.firebaseapp.com",
+            projectId: "lead-49f3e",
+            storageBucket: "lead-49f3e.firebasestorage.app", 
+            messagingSenderId: "915093253027",
+            appId: "1:915093253027:web:65a18f4c31e68733418816",
+            measurementId: "G-MNLWB9KRFE" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const leadsCollectionRef = collection(db, "leads");
+
+        const leadFormContainer = document.getElementById('leadFormContainer');
+        const leadForm = document.getElementById('leadForm');
+        const leadsContainer = document.getElementById('leadsContainer');
+        const toggleFormButton = document.getElementById('toggleFormButton');
+        const cancelFormButton = document.getElementById('cancelFormButton');
+        const getLocationButton = document.getElementById('getLocationButton');
+        const locationInfo = document.getElementById('locationInfo');
+        const messageDiv = document.getElementById('message');
+        const formTitle = document.getElementById('formTitle');
+        const submitButton = document.getElementById('submitButton');
+        const leadIdField = document.getElementById('leadId');
+
+        const filterStatusSelect = document.getElementById('filterStatus');
+        const filterCampaignSelect = document.getElementById('filterCampaign');
+        const deleteAllSyncedButton = document.getElementById('deleteAllSyncedButton');
+
+        let localLeadsCache = []; 
+        let allLocalLeadsUnfiltered = []; 
+        let isEditing = false;
+        let editingLocalId = null;
+        let currentUserId = null;
+        let currentFilters = { status: 'all', campaign: 'all' };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                console.log("Usuário autenticado (anônimo):", currentUserId);
+                populateFilterOptions(); 
+                await loadLeadsInitial();
+            } else {
+                currentUserId = null;
+                console.log("Nenhum usuário logado. Tentando login anônimo...");
+                try {
+                    await signInAnonymously(auth);
+                } catch (error) {
+                    showMessage(`Erro de autenticação: ${error.message}`, 'error');
+                    console.error("Erro no login anônimo:", error);
+                }
+            }
+        });
+
+        const dexieDB = new Dexie('LeadsAppDB_v3'); 
+        dexieDB.version(1).stores({
+            leads: '++localId, firebaseId, userId, sincronizado, dataAtualizacaoISO, statusLead, campanha'
+        });
+
+
+        function populateFilterOptions() {
+            const statusFormSelect = document.getElementById('statusLead');
+            const campaignFormSelect = document.getElementById('campanha');
+
+            filterStatusSelect.innerHTML = '<option value="all">Todos os Status</option>';
+            filterCampaignSelect.innerHTML = '<option value="all">Todas as Campanhas</option>';
+
+            for (let i = 1; i < statusFormSelect.options.length; i++) { 
+                const option = document.createElement('option');
+                option.value = statusFormSelect.options[i].value;
+                option.textContent = statusFormSelect.options[i].textContent;
+                filterStatusSelect.appendChild(option);
+            }
+            for (let i = 1; i < campaignFormSelect.options.length; i++) { 
+                const option = document.createElement('option');
+                option.value = campaignFormSelect.options[i].value;
+                option.textContent = campaignFormSelect.options[i].textContent;
+                filterCampaignSelect.appendChild(option);
+            }
+        }
+        
+        filterStatusSelect.addEventListener('change', (e) => {
+            currentFilters.status = e.target.value;
+            applyFiltersAndRenderLeads();
+        });
+
+        filterCampaignSelect.addEventListener('change', (e) => {
+            currentFilters.campaign = e.target.value;
+            applyFiltersAndRenderLeads();
+        });
+
+        function applyFiltersAndRenderLeads() {
+            let filtered = [...allLocalLeadsUnfiltered]; 
+
+            if (currentFilters.status !== 'all') {
+                filtered = filtered.filter(lead => lead.statusLead === currentFilters.status);
+            }
+            if (currentFilters.campaign !== 'all') {
+                filtered = filtered.filter(lead => lead.campanha === currentFilters.campaign);
+            }
+            localLeadsCache = filtered; 
+            renderLeads();
+        }
+
+
+        async function loadLeadsInitial() {
+            if (!currentUserId) return;
+            await loadLeadsFromCacheAndApplyFilters(); 
+            if (navigator.onLine) {
+                await syncAllPendingOperations();
+                await fetchLeadsFromFirestoreAndMerge(); 
+            } else {
+                showMessage('Operando offline. Mostrando dados locais.', 'warning');
+            }
+        }
+        
+        async function loadLeadsFromCacheAndApplyFilters() {
+            if (!currentUserId) return;
+            try {
+                const cachedLeads = await dexieDB.leads
+                    .where({ userId: currentUserId })
+                    .filter(lead => lead.sincronizado !== 2) 
+                    .sortBy('dataAtualizacaoISO');
+                
+                allLocalLeadsUnfiltered = cachedLeads.reverse(); 
+                applyFiltersAndRenderLeads(); 
+
+                if (allLocalLeadsUnfiltered.length === 0 && !document.querySelector('.lead-item')) {
+                    leadsContainer.innerHTML = '<p><i class="fas fa-folder-open fa-2x" style="margin-bottom:10px; display:block;"></i>Nenhum lead cadastrado. Clique no "+" para adicionar.</p>';
+                }
+            } catch (error) {
+                console.error("Erro ao carregar leads do cache Dexie:", error);
+                showMessage('Erro ao carregar dados offline.', 'error');
+            }
+        }
+
+        async function syncAllPendingOperations() {
+            if (!navigator.onLine || !currentUserId) return;
+            await syncOfflineCreationsAndUpdates();
+            await syncOfflineDeletions();
+        }
+
+        async function syncOfflineCreationsAndUpdates() {
+            const unsyncedLeads = await dexieDB.leads.where({ userId: currentUserId, sincronizado: 0 }).toArray();
+            if (unsyncedLeads.length === 0) return;
+
+            showMessage(`Sincronizando ${unsyncedLeads.length} alterações pendentes...`, 'info');
+            let successCount = 0;
+            for (const lead of unsyncedLeads) {
+                const leadDataForFirestore = { ...lead }; 
+                delete leadDataForFirestore.localId;
+                delete leadDataForFirestore.sincronizado;
+                delete leadDataForFirestore.dataAtualizacaoISO; 
+                
+                leadDataForFirestore.dataAtualizacao = serverTimestamp();
+                
+                if (!lead.firebaseId && leadDataForFirestore.dataCadastro) { 
+                     try {
+                        leadDataForFirestore.dataCadastro = Timestamp.fromDate(new Date(leadDataForFirestore.dataCadastro));
+                    } catch (e) {
+                        leadDataForFirestore.dataCadastro = serverTimestamp(); 
+                    }
+                } else if (!lead.firebaseId && !leadDataForFirestore.dataCadastro) { 
+                     leadDataForFirestore.dataCadastro = serverTimestamp();
+                }
+
+                try {
+                    let updatedFirebaseId = lead.firebaseId;
+                    if (lead.firebaseId) {
+                        const docRef = doc(db, "leads", lead.firebaseId);
+                        await updateDoc(docRef, leadDataForFirestore);
+                    } else {
+                        const docRef = await addDoc(leadsCollectionRef, leadDataForFirestore);
+                        updatedFirebaseId = docRef.id;
+                    }
+                    await dexieDB.leads.update(lead.localId, { sincronizado: 1, firebaseId: updatedFirebaseId });
+                    successCount++;
+                } catch (error) {
+                    console.error(`Falha ao sincronizar lead "${lead.nome}":`, error);
+                }
+            }
+            if (successCount > 0) showMessage(`${successCount} alteraç${successCount > 1 ? 'ões' : 'ão'} sincronizada${successCount > 1 ? 's' : ''}!`, 'success');
+            else if (unsyncedLeads.length > 0 && successCount === 0) showMessage(`Falha ao sincronizar alterações. Verifique o console.`, 'error');
+            
+            await loadLeadsFromCacheAndApplyFilters(); 
+        }
+
+        async function syncOfflineDeletions() {
+            const pendingDeleteLeads = await dexieDB.leads.where({ userId: currentUserId, sincronizado: 2 }).toArray();
+            if (pendingDeleteLeads.length === 0) return;
+
+            showMessage(`Sincronizando ${pendingDeleteLeads.length} exclusão(ões)...`, 'info');
+            let successCount = 0;
+            const batch = writeBatch(db); 
+            const dexieDeletes = [];
+
+            for (const lead of pendingDeleteLeads) {
+                if (lead.firebaseId) {
+                    const docRef = doc(db, "leads", lead.firebaseId);
+                    batch.delete(docRef);
+                    dexieDeletes.push(lead.localId); 
+                } else {
+                    await dexieDB.leads.delete(lead.localId); 
+                    successCount++;
+                }
+            }
+
+            try {
+                if (dexieDeletes.length > 0) { 
+                    await batch.commit();
+                    await dexieDB.leads.bulkDelete(dexieDeletes); 
+                    successCount += dexieDeletes.length;
+                }
+            } catch (error) {
+                 console.error(`Falha ao executar batch de exclusão no Firestore:`, error);
+                 showMessage(`Falha ao sincronizar algumas exclusões.`, 'error');
+            }
+
+            if (successCount > 0) showMessage(`${successCount} exclus${successCount > 1 ? 'ões' : 'ão'} sincronizada${successCount > 1 ? 's' : ''}!`, 'success');
+            await loadLeadsFromCacheAndApplyFilters(); 
+        }
+
+        async function fetchLeadsFromFirestoreAndMerge() {
+            if (!currentUserId || !navigator.onLine) return;
+            showMessage('Buscando atualizações do servidor...', 'info');
+            try {
+                const q = query(leadsCollectionRef, where("userId", "==", currentUserId), orderBy("dataAtualizacao", "desc"));
+                const querySnapshot = await getDocs(q);
+                let changesMadeToCache = false;
+                const firestoreIds = new Set();
+
+                for (const docSnap of querySnapshot.docs) {
+                    firestoreIds.add(docSnap.id);
+                    const firestoreLeadData = docSnap.data();
+                    const leadForCache = {
+                        firebaseId: docSnap.id, userId: firestoreLeadData.userId,
+                        nome: firestoreLeadData.nome, telefone: firestoreLeadData.telefone,
+                        endereco: firestoreLeadData.endereco, campanha: firestoreLeadData.campanha,
+                        comentarios: firestoreLeadData.comentarios || '', statusLead: firestoreLeadData.statusLead,
+                        latitude: firestoreLeadData.latitude || null, longitude: firestoreLeadData.longitude || null,
+                        dataCadastro: firestoreLeadData.dataCadastro?.toDate ? firestoreLeadData.dataCadastro.toDate().toISOString() : (typeof firestoreLeadData.dataCadastro === 'string' ? firestoreLeadData.dataCadastro : null),
+                        dataAtualizacaoISO: firestoreLeadData.dataAtualizacao?.toDate ? firestoreLeadData.dataAtualizacao.toDate().toISOString() : new Date().toISOString(),
+                        sincronizado: 1
+                    };
+
+                    const cachedLead = await dexieDB.leads.get({ firebaseId: docSnap.id });
+                    if (!cachedLead) {
+                        await dexieDB.leads.add(leadForCache); changesMadeToCache = true;
+                    } else if (new Date(leadForCache.dataAtualizacaoISO) > new Date(cachedLead.dataAtualizacaoISO) && cachedLead.sincronizado !== 0) {
+                        await dexieDB.leads.put({ ...leadForCache, localId: cachedLead.localId }); changesMadeToCache = true;
+                    }
+                }
+                
+                const allLocalLeads = await dexieDB.leads.where({ userId: currentUserId }).toArray();
+                for (const localLead of allLocalLeads) {
+                    if (localLead.firebaseId && !firestoreIds.has(localLead.firebaseId) && localLead.sincronizado === 1) {
+                        await dexieDB.leads.delete(localLead.localId); changesMadeToCache = true;
+                    }
+                }
+
+                if (changesMadeToCache) {
+                    await loadLeadsFromCacheAndApplyFilters(); 
+                    showMessage('Dados locais atualizados com o servidor!', 'success');
+                }
+
+            } catch (error) {
+                console.error("Erro ao buscar/mesclar leads do Firestore:", error);
+                showMessage('Erro ao buscar dados do servidor.', 'error');
+            }
+        }
+
+        function showMessage(msg, type) {
+            let iconClass = '';
+            if (type === 'success') iconClass = 'fas fa-check-circle';
+            else if (type === 'error') iconClass = 'fas fa-times-circle';
+            else if (type === 'info') iconClass = 'fas fa-info-circle';
+            else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+
+            messageDiv.innerHTML = `<i class="${iconClass}"></i> ${msg}`;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'flex'; 
+            setTimeout(() => {
+                if (messageDiv.innerHTML === `<i class="${iconClass}"></i> ${msg}`) { 
+                    messageDiv.style.display = 'none';
+                }
+            }, 4000);
+        }
+
+        function toggleForm(leadToEdit = null) {
+            leadFormContainer.classList.toggle('active');
+            const isActive = leadFormContainer.classList.contains('active');
+            toggleFormButton.innerHTML = isActive ? '<i class="fas fa-times"></i>' : '<i class="fas fa-plus"></i>';
+            toggleFormButton.classList.toggle('form-active', isActive); 
+
+            if (isActive) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (leadToEdit) {
+                    isEditing = true; editingLocalId = leadToEdit.localId;
+                    formTitle.textContent = 'Editar Lead'; submitButton.value = 'Atualizar Lead';
+                    leadIdField.value = leadToEdit.localId;
+                    document.getElementById('nome').value = leadToEdit.nome || '';
+                    document.getElementById('telefone').value = leadToEdit.telefone || '';
+                    document.getElementById('endereco').value = leadToEdit.endereco || '';
+                    document.getElementById('campanha').value = leadToEdit.campanha || '';
+                    document.getElementById('comentarios').value = leadToEdit.comentarios || '';
+                    document.getElementById('statusLead').value = leadToEdit.statusLead || '';
+                    locationInfo.textContent = leadToEdit.latitude && leadToEdit.longitude ? `Lat: ${Number(leadToEdit.latitude).toFixed(6)}, Long: ${Number(leadToEdit.longitude).toFixed(6)}` : '';
+                } else {
+                    isEditing = false; editingLocalId = null;
+                    formTitle.textContent = 'Cadastrar Novo Lead'; submitButton.value = 'Salvar Lead';
+                    leadForm.reset(); leadIdField.value = ''; locationInfo.textContent = '';
+                }
+            } else {
+                isEditing = false; editingLocalId = null;
+                leadForm.reset(); leadIdField.value = ''; locationInfo.textContent = '';
+            }
+        }
+
+        function renderLeads() { 
+            leadsContainer.innerHTML = '';
+            if (localLeadsCache.length === 0) {
+                const statusFilterActive = currentFilters.status !== 'all';
+                const campaignFilterActive = currentFilters.campaign !== 'all';
+                let emptyMsg = '<p><i class="fas fa-folder-open fa-2x" style="margin-bottom:10px; display:block;"></i>';
+                if (statusFilterActive || campaignFilterActive) {
+                    emptyMsg += 'Nenhum lead encontrado com os filtros aplicados.';
+                } else {
+                    emptyMsg += 'Nenhum lead cadastrado. Clique no "+" para adicionar.';
+                }
+                emptyMsg += '</p>';
+                leadsContainer.innerHTML = emptyMsg;
+                return;
+            }
+
+            localLeadsCache.forEach((lead) => {
+                const leadItem = document.createElement('div');
+                leadItem.classList.add('lead-item');
+                leadItem.dataset.localId = lead.localId;
+
+                const statusNormalized = (lead.statusLead || "").replace(/\s+/g, '').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                leadItem.classList.add(`status-border-${statusNormalized}`); 
+
+                let syncText = '', syncClass = '';
+                if (lead.sincronizado === 0) { syncText = 'Pendente'; syncClass = 'pendente'; }
+                else if (lead.sincronizado === 1) { syncText = 'Sincronizado'; syncClass = 'sincronizado'; }
+                
+                const dataCadastroDisplay = lead.dataCadastro ? new Date(lead.dataCadastro).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+
+                let leadItemHTML = `
+                    <button class="delete-button" aria-label="Excluir Lead"><i class="fas fa-trash-alt"></i></button>
+                    <h3>
+                        <span>${lead.nome || 'Lead sem nome'}</span>
+                        <span class="status-badges">
+                            ${syncText ? `<span class="sync-status ${syncClass}">${syncText}</span>` : ''}
+                            <span class="status status-${statusNormalized}">${lead.statusLead || 'N/A'}</span>
+                        </span>
+                    </h3>
+                    <p><strong>Telefone:</strong> <a href="tel:${lead.telefone || ''}">${lead.telefone || 'N/A'}</a></p>
+                    <p><strong>Endereço:</strong> ${lead.endereco || 'N/A'}</p>
+                    <p><strong>Campanha:</strong> ${lead.campanha || 'N/A'}</p>
+                    ${lead.comentarios ? `<p><strong>Comentários:</strong> ${lead.comentarios}</p>` : ''}
+                    <p style="font-size: 0.8em; color: #888;">Cadastrado em: ${dataCadastroDisplay}</p>
+                    ${lead.latitude && lead.longitude ? `<p style="font-size: 0.7em; color: #aaa;">Lat: ${Number(lead.latitude).toFixed(4)}, Long: ${Number(lead.longitude).toFixed(4)}</p>` : ''}
+                `;
+
+                if (lead.statusLead === "Identificação de Interesse") {
+                    const safeNome = String(lead.nome || '').replace(/"/g, '&quot;');
+                    const safeEndereco = String(lead.endereco || '').replace(/"/g, '&quot;');
+                    const safeTelefone = String(lead.telefone || '').replace(/"/g, '&quot;');
+                    leadItemHTML += `
+                        <div class="lead-actions">
+                            <button class="button-whatsapp"
+                                    data-nome="${safeNome}"
+                                    data-endereco="${safeEndereco}"
+                                    data-telefone="${safeTelefone}">
+                                <i class="fab fa-whatsapp"></i> Informar Caixa
+                            </button>
+                        </div>
+                    `;
+                }
+                leadItem.innerHTML = leadItemHTML;
+
+
+                leadItem.querySelector('.delete-button').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleDeleteLead(lead.localId);
+                });
+                leadItem.addEventListener('click', (e) => {
+                     // Não abrir para edição se clicou no botão do WhatsApp
+                    if (e.target.closest('.button-whatsapp')) {
+                        return;
+                    }
+                    handleEditLead(lead.localId);
+                });
+                leadsContainer.appendChild(leadItem);
+            });
+        }
+
+        leadsContainer.addEventListener('click', function(event) { // Event listener para botão WhatsApp
+            const whatsappButton = event.target.closest('.button-whatsapp');
+            if (whatsappButton) {
+                event.preventDefault(); 
+                event.stopPropagation(); // Impede que o clique no botão também abra a edição do lead
+
+                const nome = whatsappButton.dataset.nome;
+                const endereco = whatsappButton.dataset.endereco;
+                const telefone = whatsappButton.dataset.telefone;
+                const whatsAppNumber = "5511999259752"; 
+
+                let message = `Olá! Uma nova Identificação de Interesse foi cadastrada:\n\n`;
+                message += `Cliente: ${nome}\n`;
+                message += `Endereço: ${endereco}\n`;
+                message += `Contato: ${telefone}\n\n`;
+                message += `Por favor, verificar no sistema.`;
+
+                const encodedMessage = encodeURIComponent(message);
+                const whatsappURL = `https://wa.me/${whatsAppNumber}?text=${encodedMessage}`;
+
+                window.open(whatsappURL, '_blank');
+                showMessage('Abrindo WhatsApp para informar o caixa...', 'info');
+            }
+        });
+
+
+        leadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!currentUserId) { showMessage('Autenticação pendente.', 'error'); return; }
+
+            const nome = document.getElementById('nome').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+            const endereco = document.getElementById('endereco').value.trim().toUpperCase();
+            const campanha = document.getElementById('campanha').value;
+            const comentarios = document.getElementById('comentarios').value.trim();
+            const statusLead = document.getElementById('statusLead').value;
+
+            if (!nome || !telefone || !endereco || !campanha || !statusLead) {
+                showMessage('Preencha todos os campos obrigatórios.', 'error'); return;
+            }
+
+            let latitude = null, longitude = null;
+            const latLongMatch = locationInfo.textContent.match(/Lat: ([\d.-]+), Long: ([\d.-]+)/);
+            if (latLongMatch) { latitude = parseFloat(latLongMatch[1]); longitude = parseFloat(latLongMatch[2]); }
+
+            const nowISO = new Date().toISOString();
+            const leadDataPayload = {
+                nome, telefone, endereco, campanha, comentarios, statusLead, latitude, longitude,
+                userId: currentUserId, dataAtualizacaoISO: nowISO, sincronizado: 0
+            };
+
+            try {
+                if (isEditing && editingLocalId) {
+                    const existingLead = await dexieDB.leads.get(editingLocalId);
+                    const updatedLead = { ...existingLead, ...leadDataPayload, dataCadastro: existingLead.dataCadastro || nowISO };
+                    await dexieDB.leads.put(updatedLead);
+                    showMessage('Lead atualizado localmente.', 'info');
+                } else {
+                    leadDataPayload.dataCadastro = nowISO;
+                    await dexieDB.leads.add(leadDataPayload);
+                    showMessage('Lead salvo localmente.', 'info');
+                }
+                await loadLeadsFromCacheAndApplyFilters(); 
+                toggleForm(null);
+                if (navigator.onLine) await syncOfflineCreationsAndUpdates();
+
+            } catch (error) {
+                console.error("Erro ao salvar lead no Dexie:", error);
+                showMessage('Erro ao salvar lead localmente.', 'error');
+            }
+        });
+
+        async function handleDeleteLead(localId) {
+            if (!currentUserId) { showMessage('Autenticação pendente.', 'error'); return; }
+            const leadToDelete = await dexieDB.leads.get(localId);
+            if (!leadToDelete) { showMessage('Lead não encontrado.', 'error'); return; }
+
+            if (confirm(`Tem certeza que deseja excluir "${leadToDelete.nome}"?`)) {
+                if (leadToDelete.firebaseId && leadToDelete.sincronizado !== 0) { 
+                    await dexieDB.leads.update(localId, { sincronizado: 2 }); 
+                    showMessage(`Lead "${leadToDelete.nome}" marcado para exclusão do servidor.`, 'info');
+                    if (navigator.onLine) await syncOfflineDeletions();
+                } else { 
+                    await dexieDB.leads.delete(localId);
+                    showMessage(`Lead "${leadToDelete.nome}" excluído localmente.`, 'success');
+                }
+                await loadLeadsFromCacheAndApplyFilters(); 
+            }
+        }
+        
+        deleteAllSyncedButton.addEventListener('click', async () => {
+            if (!currentUserId) { showMessage('Autenticação pendente.', 'error'); return; }
+            
+            const syncedLeads = await dexieDB.leads.where({ userId: currentUserId, sincronizado: 1 }).toArray();
+            if (syncedLeads.length === 0) {
+                showMessage('Nenhum lead sincronizado para apagar.', 'info');
+                return;
+            }
+
+            if (confirm(`Tem certeza que deseja apagar ${syncedLeads.length} lead(s) sincronizado(s)? Os dados no servidor também serão removidos.`)) {
+                deleteAllSyncedButton.disabled = true;
+                deleteAllSyncedButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Apagando...';
+                showMessage(`Apagando ${syncedLeads.length} lead(s) sincronizado(s)...`, 'info');
+                
+                let localDeletesCount = 0;
+                for (const lead of syncedLeads) {
+                    if (lead.firebaseId) { 
+                        await dexieDB.leads.update(lead.localId, { sincronizado: 2 }); 
+                        localDeletesCount++;
+                    }
+                }
+                if (localDeletesCount > 0) {
+                    showMessage(`${localDeletesCount} lead(s) marcado(s) para exclusão. Sincronizando...`, 'info');
+                    if (navigator.onLine) await syncOfflineDeletions(); // Isso vai tentar deletar do Firebase e depois do Dexie
+                }
+                await loadLeadsFromCacheAndApplyFilters();
+                deleteAllSyncedButton.disabled = false;
+                deleteAllSyncedButton.innerHTML = '<i class="fas fa-eraser"></i> Apagar Sincronizados';
+            }
+        });
+
+        async function handleEditLead(localId) {
+            const leadToEdit = await dexieDB.leads.get(localId);
+            if (leadToEdit) {
+                toggleForm(leadToEdit);
+            } else {
+                showMessage('Lead não encontrado para edição.', 'error');
+            }
+        }
+
+        getLocationButton.addEventListener('click', async () => {
+            if (!navigator.geolocation) { showMessage('Seu navegador não suporta Geolocalização.', 'error'); return; }
+            
+            getLocationButton.disabled = true; 
+            getLocationButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Obtendo...';
+            showMessage('Buscando sua localização...', 'info');
+            try {
+                const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }));
+                const { latitude: lat, longitude: long } = position.coords;
+                locationInfo.textContent = `Lat: ${lat.toFixed(6)}, Long: ${long.toFixed(6)}`;
+                showMessage('Localização obtida! Buscando endereço...', 'info');
+                getLocationButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando endereço...';
+
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${long}`);
+                if (!response.ok) throw new Error(`Nominatim: ${response.statusText} (status ${response.status})`);
+                const data = await response.json();
+
+                if (data && data.address) {
+                    const ad = data.address;
+                    const addressParts = [ad.road, ad.house_number, ad.suburb, ad.city || ad.town || ad.village, ad.state];
+                    const fullAddress = addressParts.filter(Boolean).join(', ').toUpperCase();
+                    document.getElementById('endereco').value = fullAddress;
+                    showMessage('Endereço preenchido!', 'success');
+                    locationInfo.textContent += ` - Endereço: ${fullAddress.substring(0, 50)}...`;
+                } else {
+                    showMessage('Endereço não encontrado para esta localização.', 'warning');
+                    document.getElementById('endereco').value = `LAT: ${lat.toFixed(4)}, LONG: ${long.toFixed(4)}`;
+                }
+            } catch (error) {
+                console.error('Erro de Geolocalização/Nominatim:', error);
+                locationInfo.textContent = '';
+                let displayError = 'Erro ao obter localização/endereço.';
+                if (error.name === 'GeolocationPositionError') {
+                    if (error.code === 1) displayError = 'Permissão de localização negada.';
+                    else if (error.code === 2) displayError = 'Localização indisponível.';
+                    else if (error.code === 3) displayError = 'Tempo esgotado para obter localização.';
+                } else if (error.message && error.message.startsWith("Nominatim")) { 
+                    displayError = error.message;
+                }
+                showMessage(displayError, 'error');
+            } finally {
+                getLocationButton.disabled = false; 
+                getLocationButton.innerHTML = '<i class="fas fa-map-marker-alt"></i> Preencher Endereço';
+            }
+        });
+
+        toggleFormButton.addEventListener('click', () => toggleForm(null));
+        cancelFormButton.addEventListener('click', () => {
+            toggleForm(null);
+            showMessage('Operação cancelada.', 'info');
+        });
+
+        window.addEventListener('online', async () => {
+            showMessage('Conexão restabelecida! Sincronizando...', 'info');
+            if (currentUserId) await loadLeadsInitial();
+        });
+        window.addEventListener('offline', () => showMessage('Você está offline. Alterações serão salvas localmente.', 'warning'));
+
+        console.log("App Leads inicializado. Aguardando autenticação...");
+
+    </script>
+</body>
+</html>
